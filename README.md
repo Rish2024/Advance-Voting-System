@@ -110,5 +110,5 @@ This project is licensed under the MIT License.
 
 ## 📧 Contact
 
-**Author**: Rishabh
+**Author**: Hrishabh
 **GitHub**: [@Rish2024](https://github.com/Rish2024)
