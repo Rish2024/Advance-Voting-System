@@ -27,26 +27,26 @@ app.set('io', io);
 // Connect to MongoDB
 connectDB();
 
-// ─── Security Middleware ────────────────────────────────────────────
+
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: true, credentials: true }));
 app.use(generalLimiter);
 
-// ─── Body Parsing ───────────────────────────────────────────────────
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ─── Serve Static Files ────────────────────────────────────────────
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ─── API Routes ─────────────────────────────────────────────────────
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/elections', require('./routes/electionRoutes'));
 app.use('/api/votes', require('./routes/voteRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
-// ─── Health Check ───────────────────────────────────────────────────
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -64,7 +64,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ─── Serve index.html for root ──────────────────────────────────────
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -122,7 +122,7 @@ const seedAdmin = async () => {
   }
 };
 
-// ─── Start Server ───────────────────────────────────────────────────
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   console.log(`🚀 E-Vote Server running on http://localhost:${PORT}`);

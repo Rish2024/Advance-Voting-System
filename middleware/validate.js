@@ -1,6 +1,5 @@
 const { body, param, validationResult } = require('express-validator');
 
-// Middleware to check validation results
 const handleValidation = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
