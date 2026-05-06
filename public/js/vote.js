@@ -396,18 +396,23 @@ async function startFaceDetectionLoop(video) {
           statusEl.innerHTML = '<span class="face-pulse-dot"></span> <span>Scanning face... ' + progress + '% (' + Math.ceil(remaining / 1000) + 's remaining)</span>';
         } else {
           // 3 seconds elapsed — now compare face descriptors
+          // face-api standard: distance < 0.6 = match, distance 0 = perfect
           const distance = euclideanDist(registeredDescriptor, detection.descriptor);
-          const matchConfidence = Math.max(0, Math.round((1 - distance) * 100));
+
+          // Convert distance to a 0–100% confidence display
+          // distance 0.0 → 100%, distance 0.6 → 40% (threshold), distance 1.0+ → 0%
+          const matchConfidence = Math.max(0, Math.round((1 - Math.min(distance, 1.0)) * 100));
           updateConfidence(matchConfidence);
 
-          if (matchConfidence >= 70) {
-            // Face matched with 70%+ confidence — allow voting
+          // Standard face-api.js threshold: distance < 0.6 is a confirmed match
+          if (distance < 0.6) {
+            // ✅ Face matched — allow voting
             hideAlertCard();
             faceVerified = true;
             onFaceVerified(matchConfidence);
             return;
           } else {
-            // Face does NOT match — block voting and show alert card
+            // ❌ Face does NOT match — block voting and show alert card
             statusEl.className = 'face-status face-status-error';
             statusEl.innerHTML = '<span>\u274c</span> <span>Face does not match! (' + matchConfidence + '% similarity)</span>';
             blockVoteButton();
@@ -475,8 +480,8 @@ function showAlertCard(matchConfidence) {
             Face ID Verification Failed
           </h4>
           <p style="margin: 0 0 8px; font-size: 0.82rem; color: #b91c1c; line-height: 1.5;">
-            Your face matched only <strong>${matchConfidence}%</strong> with the registered Face ID.
-            A minimum of <strong>70%</strong> match is required to cast a vote.
+            Your face matched only <strong>${matchConfidence}%</strong> similarity with your registered Face ID.
+            A similarity score above <strong>40%</strong> (distance &lt; 0.6) is required to cast a vote.
           </p>
           <div style="
             background: #fecaca;
